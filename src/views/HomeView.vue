@@ -28,6 +28,7 @@
             <input type="range" v-model="acc.ratio"> {{ acc.ratio }}%
             <button @click="swapByType(acc, 0)">ETH->USDC</button>
             <button @click="swapByType(acc, 1)">USDC->ETH</button>
+            <button @click="lp(acc)">LP</button>
           </div>
         </div>
       </div>
@@ -38,7 +39,7 @@
 </template>
 <script>
 import {getBalanceInfo} from "../utils";
-import { swapETHForUSDC } from "../utils/syncswap";
+import {addLP, swapETHForUSDC} from "../utils/syncswap";
 
 export default {
   data() {
@@ -64,6 +65,10 @@ export default {
       const { priKey, ratio } = acc;
       const result = await swapETHForUSDC(priKey, ratio, type);
       console.log(result);
+    },
+    async lp(acc) {
+      const { priKey } = acc;
+      await addLP(priKey);
     }
   }
 }

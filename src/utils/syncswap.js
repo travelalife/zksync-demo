@@ -120,3 +120,48 @@ export async function swapETHForUSDC(privateKey, ratio = 100, direction = 0) {
   const tx = await response.wait();
   console.log('SyncSwap swap 成功:', tx.transactionHash);
 }
+
+export async function addLP(privateKey, ratio = 100, direction = 0) {
+  // 创建钱包
+  const wallet = new zksync.Wallet(privateKey, zksProvider, ethProvider);
+  const classicPoolFactory = new zksync.Contract(
+    classicPoolFactoryAddy,
+    classicPoolFactoryAbi,
+    wallet
+  );
+  const poolETHUSDCAddress = await classicPoolFactory.getPool(L2_WETH_ADDY, L2_USDC_ADDY);
+
+  // 获取 ETH 余额
+  const ethBalance = await wallet.getBalance(zksync.utils.ETH_ADDRESS);
+  const usdcBalance = await wallet.getBalance(L2_USDC_ADDY);
+
+  console.log('ETH 余额: ', ethers.utils.formatEther(ethBalance));
+  console.log('USDC 余额:', ethers.utils.formatUnits(usdcBalance, 6));
+
+  const pair = [
+    {
+      token: L2_USDC_ADDY,
+      amount: usdcBalance
+    },
+    {
+      token: zksync.utils.ETH_ADDRESS,
+      amount: 0
+    }
+  ];
+  console.log(usdcBalance);
+  return
+
+  const routerContract = new zksync.Contract(routerAddy, routerAbi, wallet);
+  const result = await routerContract.functions.addLiquidity2(
+    poolETHUSDCAddress,
+    pair,
+    ethers.utils.defaultAbiCoder.encode(
+      ['address'],
+      [wallet.address]
+    ),
+    usdcBalance ** 2,
+    ethers.constants.AddressZero,
+    '0x'
+    );
+  console.log(result);
+}
