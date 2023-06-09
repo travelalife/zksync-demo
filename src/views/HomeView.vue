@@ -15,22 +15,35 @@
             <div class="h-b-name">ETH</div>
             <div class="h-b-name">{{ acc.ethNum }}</div>
           </div>
+          <div class="h-b-row">
+            <div class="h-b-name">USDC</div>
+            <div class="h-b-name">{{ acc.usdcNum }}</div>
+          </div>
         </div>
         <div class="h-op">
           <div class="op-row">
             <input type="text"><button>存款</button>
           </div>
+          <div class="op-row">
+            <input type="range" v-model="acc.ratio"> {{ acc.ratio }}%
+            <button @click="swapByType(acc, 0)">ETH->USDC</button>
+            <button @click="swapByType(acc, 1)">USDC->ETH</button>
+          </div>
         </div>
       </div>
     </div>
+
+    <div class="log-area"></div>
   </main>
 </template>
 <script>
 import {getBalanceInfo} from "../utils";
+import { swapETHForUSDC } from "../utils/syncswap";
 
 export default {
   data() {
     return {
+      ratio: 0,
       accList: [],
       priKey: '',
     }
@@ -46,6 +59,11 @@ export default {
           priKey: item
         })
       }
+    },
+    async swapByType(acc, type) {
+      const { priKey, ratio } = acc;
+      const result = await swapETHForUSDC(priKey, ratio, type);
+      console.log(result);
     }
   }
 }
@@ -73,5 +91,9 @@ export default {
 }
 .h-balance {
   display: flex;
+}
+
+.h-b-row {
+  margin-right: 4px;
 }
 </style>
